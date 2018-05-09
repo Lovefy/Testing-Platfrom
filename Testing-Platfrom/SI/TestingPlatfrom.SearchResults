@@ -1,0 +1,3 @@
+---- SW23_GPIO_Port Matches (2 in 2 files) ----
+IoBsp.c (d:\workspace\testingpaltform\testing-platfrom\applecation\src\driver-layer):	key_val |= ((GPIO_ReadInputDataBit(SW18_GPIO_Port,SW18_Pin))|(GPIO_ReadInputDataBit(SW23_GPIO_Port,SW23_Pin)<<1)|
+IoBsp.h (d:\workspace\testingpaltform\testing-platfrom\applecation\src\driver-layer):#define SW23_GPIO_Port GPIOC
