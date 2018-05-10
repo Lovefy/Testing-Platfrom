@@ -1,5 +1,5 @@
-#ifndef __TIMER_H
-#define __TIMER_H
+#ifndef __TIMERBSP_H
+#define __TIMERBSP_H
 
 #include "sys.h"
 
@@ -24,7 +24,9 @@
 
 __packed typedef struct
 {
-    u8 TimOver_100ms_Flag[7];
+    u8 TimOver_1ms_Flag[2];
+    u8 TimOver_10ms_Flag[2];
+    u8 TimOver_100ms_Flag[2];
     u8 Tim_1s_Cnt;
     u8 TimOver_1S_Flag;
 
@@ -35,7 +37,7 @@ __packed typedef struct
 } TimPrvDataTypedef;
 
 
-
+#if 0
 __packed typedef struct
 {
     void (*TIM1_Int_Init)(u16 arr, u16 psc);
@@ -57,8 +59,11 @@ __packed typedef struct
 }
 TimerBspTypeDef, *pTimerBspTypeDef;
 
-TimerBspTypeDef *GetTimerBspData(void);
-pTimerBspTypeDef All_Timer_Bsp_init(void);
+#endif
+extern TimPrvDataTypedef GsTimPrvDataInit;
+
+//TimerBspTypeDef *GetTimerBspData(void);
+//pTimerBspTypeDef All_Timer_Bsp_init(void);
 
 void TIM1_Int_Init(u16 arr, u16 psc);
 void TIM2_Int_Init(u16 arr, u16 psc);

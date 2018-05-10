@@ -1,8 +1,8 @@
 #include "BspCfg.h"
 
 
-static TimPrvDataTypedef TimPrvDataInit;
-static TimerBspTypeDef TimerBspInit;
+TimPrvDataTypedef GsTimPrvDataInit;
+//static TimerBspTypeDef TimerBspInit;
 
 static u32 Set_Cmr3_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time);
 
@@ -92,49 +92,91 @@ void TIM2_Int_Init(u16 arr, u16 psc)
 
 void TIM2_IRQHandler(void)
 {
-    static u8 Count = 0;
+    static u8 Count = 0,sCount1 = 0;
     if(TIM_GetITStatus(TIM2, TIM_IT_CC3) != RESET)
     {
         TIM_ClearFlag(TIM2, TIM_IT_CC3);
         Set_Cmr3_NewCompareVal(TIM2, 9); /*10*100us=1ms*/
-
+		GsTimPrvDataInit.TimOver_1ms_Flag[0] = ENABLE;
+		GsTimPrvDataInit.TimOver_1ms_Flag[1] = ENABLE;
+		if(++sCount1 > 10)
+		{
+			sCount1 = 0;
+			GsTimPrvDataInit.TimOver_10ms_Flag[0] = ENABLE;
+			GsTimPrvDataInit.TimOver_10ms_Flag[1] = ENABLE;			
+		}
+			
         if(Count++ >= 99) /*100ms*/
         {
             Count = 0;
-
             /*提供固定定时标志*/
-            TimPrvDataInit.TimOver_100ms_Flag[0] = ENABLE;
-            TimPrvDataInit.TimOver_100ms_Flag[1] = ENABLE;
-            TimPrvDataInit.TimOver_100ms_Flag[2] = ENABLE;
-            TimPrvDataInit.TimOver_100ms_Flag[3] = 0x77; /*内部G-SENSER 外部G-SEN1 外部G-SEN2  NULL  延时关机*/
-            TimPrvDataInit.TimOver_100ms_Flag[4] = ENABLE; /*CAN1 Callback TimerFlag*/
-            TimPrvDataInit.TimOver_100ms_Flag[5] = ENABLE; /*CAN2 Callback TimerFlag*/
-            TimPrvDataInit.TimOver_100ms_Flag[6] = ENABLE; /*CAN1/2 Callback TimerFlag*/
+            GsTimPrvDataInit.TimOver_100ms_Flag[0] = ENABLE;
+            GsTimPrvDataInit.TimOver_100ms_Flag[1] = ENABLE;
 
-
-            TimPrvDataInit.Tim_1s_Cnt++;
-            if(TimPrvDataInit.Tim_1s_Cnt >= 10)
+            GsTimPrvDataInit.Tim_1s_Cnt++;
+            if(GsTimPrvDataInit.Tim_1s_Cnt >= 10)
             {
-                TimPrvDataInit.Tim_1s_Cnt = 0;
-                TimPrvDataInit.TimOver_1S_Flag = ENABLE;
+                GsTimPrvDataInit.Tim_1s_Cnt = 0;
+                GsTimPrvDataInit.TimOver_1S_Flag = ENABLE;
             }
             /*提供可调定时功能*/
-            TimPrvDataInit.General_Cnt[0]++;
-            if(TimPrvDataInit.General_Cnt[0] >= TimPrvDataInit.General_Compare_Val[0])
+            GsTimPrvDataInit.General_Cnt[0]++;
+            if(GsTimPrvDataInit.General_Cnt[0] >= GsTimPrvDataInit.General_Compare_Val[0])
             {
-                TimPrvDataInit.General_Cnt[0] = 0;
-                TimPrvDataInit.General_Over_Flag[0] = ENABLE;
+                GsTimPrvDataInit.General_Cnt[0] = 0;
+                GsTimPrvDataInit.General_Over_Flag[0] = ENABLE;
             }
         }
-
-        /*Create a LINK-LIST TIMER*/
-        Timer_Link_Callback();
     }
 
 
 }
 
 
+static u32 Set_Cmr1_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
+{
+    u32 CmrVal = 0;
+    TIM_ClearFlag(TIMx, TIM_IT_CC1);
+    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
+    if(CmrVal >= 65536)
+        CmrVal -= 65536;
+    TIM_SetCompare1(TIMx, CmrVal);
+    return CmrVal;
+}
+
+static u32 Set_Cmr2_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
+{
+    u32 CmrVal = 0;
+    TIM_ClearFlag(TIMx, TIM_IT_CC2);
+    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
+    if(CmrVal >= 65536)
+        CmrVal -= 65536;
+    TIM_SetCompare2(TIMx, CmrVal);
+    return CmrVal;
+}
+
+static u32 Set_Cmr3_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
+{
+    u32 CmrVal = 0;
+    TIM_ClearFlag(TIMx, TIM_IT_CC3);
+    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
+    if(CmrVal >= 65536)
+        CmrVal -= 65536;
+    TIM_SetCompare3(TIMx, CmrVal);
+    return CmrVal;
+}
+
+static u32 Set_Cmr4_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
+{
+    u32 CmrVal = 0;
+    TIM_ClearFlag(TIMx, TIM_IT_CC4);
+    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
+    if(CmrVal >= 65536)
+        CmrVal -= 65536;
+    TIM_SetCompare4(TIMx, CmrVal);
+    return CmrVal;
+}
+#if 0
 static void TIM5_Int_Init(u16 arr, u16 psc)
 {
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -210,50 +252,6 @@ static void TIM7_Int_Init(u16 arr, u16 psc)
 
 
 
-static u32 Set_Cmr1_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
-{
-    u32 CmrVal = 0;
-    TIM_ClearFlag(TIMx, TIM_IT_CC1);
-    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
-    if(CmrVal >= 65536)
-        CmrVal -= 65536;
-    TIM_SetCompare1(TIMx, CmrVal);
-    return CmrVal;
-}
-
-static u32 Set_Cmr2_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
-{
-    u32 CmrVal = 0;
-    TIM_ClearFlag(TIMx, TIM_IT_CC2);
-    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
-    if(CmrVal >= 65536)
-        CmrVal -= 65536;
-    TIM_SetCompare2(TIMx, CmrVal);
-    return CmrVal;
-}
-
-static u32 Set_Cmr3_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
-{
-    u32 CmrVal = 0;
-    TIM_ClearFlag(TIMx, TIM_IT_CC3);
-    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
-    if(CmrVal >= 65536)
-        CmrVal -= 65536;
-    TIM_SetCompare3(TIMx, CmrVal);
-    return CmrVal;
-}
-
-static u32 Set_Cmr4_NewCompareVal(TIM_TypeDef *TIMx, u32 Cmr_Time)
-{
-    u32 CmrVal = 0;
-    TIM_ClearFlag(TIMx, TIM_IT_CC4);
-    CmrVal = TIM_GetCounter(TIMx) + Cmr_Time;
-    if(CmrVal >= 65536)
-        CmrVal -= 65536;
-    TIM_SetCompare4(TIMx, CmrVal);
-    return CmrVal;
-}
-
 static void Timer_Suspend(void)
 {
 
@@ -284,7 +282,7 @@ pTimerBspTypeDef All_Timer_Bsp_init(void)
     TimerBspInit.Timer_Resume = Timer_Resume;
     TimerBspInit.Timer_Suspend = Timer_Suspend;
 
-    TimerBspInit.pTimPrvDataInit = &TimPrvDataInit;
+    TimerBspInit.pGsTimPrvDataInit = &GsTimPrvDataInit;
 
     /*Initial Timer-link point*/
     pTmrlistInit = InitTmrLinkedList();
@@ -300,7 +298,7 @@ pTimerBspTypeDef All_Timer_Bsp_init(void)
 
 
 
-
+#endif
 
 
 

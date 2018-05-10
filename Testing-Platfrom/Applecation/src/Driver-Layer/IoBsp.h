@@ -47,6 +47,18 @@
 #define REVERSE_GPIO_Port GPIOC
 
 
+#define ACC_ON()			GPIO_SetBits(ACC_GPIO_Port,ACC_Pin)			//ACC打开
+#define ACC_OFF()			GPIO_ResetBits(ACC_GPIO_Port,ACC_Pin)		//ACC关闭
+
+#define LEFT_ON()			GPIO_SetBits(LEFT_GPIO_Port,LEFT_Pin)		//LEFT打开
+#define LEFT_OFF()			GPIO_ResetBits(LEFT_GPIO_Port,LEFT_Pin)		//LEFT关闭
+
+#define RIGHT_ON()			GPIO_SetBits(RIGHT_GPIO_Port,RIGHT_Pin)		//RIGHT打开
+#define RIGHT_OFF()			GPIO_ResetBits(RIGHT_GPIO_Port,RIGHT_Pin)	//RIGHT关闭
+
+#define REVERSE_ON()		GPIO_SetBits(REVERSE_GPIO_Port,REVERSE_Pin)		//ACC打开
+#define REVERSE_OFF()		GPIO_ResetBits(REVERSE_GPIO_Port,REVERSE_Pin)	//ACC关闭
+
 typedef enum
 {
 	/*		1	4		*/
@@ -78,6 +90,7 @@ typedef enum
 
 void MX_GPIO_Init(void);
 u32 get_key(void);
+void IoTask(void);
 
 
 

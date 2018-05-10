@@ -20,7 +20,9 @@ int main(void)
     while(1)
     {
 			test = get_key();
-//        AllBspStruct.pWDGBspStruct->IWDG_Feed();
+			delay_ms(1000);
+			printf("key = 0x%x\r\n",test);
+        AllBspStruct.pWDGBspStruct->IWDG_Feed();
     }
 }
 

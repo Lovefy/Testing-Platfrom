@@ -1,9 +1,11 @@
 #include "IoBsp.h"
 
 
+u32 Gkey_val;	//°´¼üÖµ
+
+
 
 void MX_GPIO_Init(void)
-
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;
@@ -68,8 +70,110 @@ u32 get_key(void)
 	
 	key_val |= ((GPIO_ReadInputDataBit(SW18_GPIO_Port,SW18_Pin))|(GPIO_ReadInputDataBit(SW23_GPIO_Port,SW23_Pin)<<1)|
 						(GPIO_ReadInputDataBit(SW25_GPIO_Port,SW25_Pin)<<2))<<8;
-
+	key_val = 0x7ff^key_val;
 	return key_val;
 }
+
+
+
+void AutoMode(void)
+{
+	
+}
+
+void ManualMode(void)
+{
+	if(Gkey_val&KEY_ACC)
+	{
+		ACC_ON();
+		if((Gkey_val&KEY_LEFT)&&(Gkey_val&KEY_RIGHT))
+		{
+			LEFT_ON();
+			RIGHT_ON();
+		}
+		else if(Gkey_val&KEY_LEFT)
+		{
+			LEFT_ON();
+			RIGHT_OFF();
+		}
+		else if(Gkey_val&KEY_RIGHT)
+		{
+			LEFT_OFF();
+			RIGHT_ON();
+		}
+		else
+		{
+			LEFT_OFF();
+			RIGHT_OFF();
+		}
+
+		if(Gkey_val&KEY_REVERSE)
+		{
+			REVERSE_ON();
+		}
+		else
+		{
+			REVERSE_OFF();
+		}
+	}
+	else
+	{
+		ACC_OFF();
+		LEFT_OFF();
+		RIGHT_OFF();
+		REVERSE_OFF();
+	}
+}
+
+void IoTask(void)
+{
+	if(GsTimPrvDataInit.TimOver_10ms_Flag[0] == ENABLE)
+	{
+		GsTimPrvDataInit.TimOver_10ms_Flag[0] = DISABLE;
+		Gkey_val = get_key();
+		if(Gkey_val&KEY_AUTO)
+		{
+			ManualMode();
+		}
+		else
+		{
+			ManualMode();
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
