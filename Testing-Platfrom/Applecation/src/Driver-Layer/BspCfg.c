@@ -18,6 +18,7 @@ uint8_t BSP_Init(void)
     Uart_Debug_init(DEBUG_BAUD);
 //    Led_Init(GPIO_Mode_Out_PP);
 	MX_GPIO_Init();
+	AllTimerInit();
 
     return SUCCESS;
 }

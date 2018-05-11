@@ -65,8 +65,9 @@ extern TimPrvDataTypedef GsTimPrvDataInit;
 //TimerBspTypeDef *GetTimerBspData(void);
 //pTimerBspTypeDef All_Timer_Bsp_init(void);
 
-void TIM1_Int_Init(u16 arr, u16 psc);
-void TIM2_Int_Init(u16 arr, u16 psc);
+
+void AllTimerInit(void);
+
 
 
 

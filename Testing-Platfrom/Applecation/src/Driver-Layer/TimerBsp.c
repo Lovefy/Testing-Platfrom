@@ -25,14 +25,12 @@ void TIM1_Int_Init(u16 arr, u16 psc)
     TIM_SetCounter(TIM1, 0);
     TIM_ClearFlag(TIM1, TIM_FLAG_Update);
     TIM_ARRPreloadConfig(TIM1, DISABLE);
-    /*
     TIM_ITConfig(TIM1,TIM_IT_Update,ENABLE );
     NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-    */
     TIM_Cmd(TIM1, ENABLE);
 }
 
@@ -303,7 +301,14 @@ pTimerBspTypeDef All_Timer_Bsp_init(void)
 
 
 
+void AllTimerInit(void)
+{
+	/*		定时器1		100us定时		*/
+	TIM1_Int_Init(TIM1_ARR_VAL,TIM1_PRC_VAL);
+	/*		定时器2		100us定时		*/
+	TIM2_Int_Init(TIM2_ARR_VAL,TIM2_PRC_VAL);
 
+}
 
 
 
